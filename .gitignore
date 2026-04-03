@@ -50,3 +50,15 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# JavaScript/TypeScript dependencies and caches
+**/node_modules/
+**/node-compile-cache/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Frontend build outputs
+web/build/
+web/.vite/
