@@ -110,11 +110,12 @@ if service == 'fivemanage' then
 
                 SetTimeout(500, function()
                     PerformHttpRequest(endpoint, function(status, _, _, response)
-                        if status ~= 200 then 
+                        if status ~= 200 then
                             if type(response) == 'string' then
                                 response = json.decode(response) or response
-                                badResponse(endpoint, status, response)
                             end
+
+                            badResponse(endpoint, status, response or 'no response body')
                         end
                     end, 'POST', json.encode(buffer), headers)
 
@@ -158,9 +159,15 @@ if service == 'datadog' then
                     PerformHttpRequest(endpoint, function(status, _, _, response)
                         if status ~= 202 then
                             if type(response) == 'string' then
-                                response = json.decode(response:sub(10)) or response
-                                badResponse(endpoint, status, type(response) == 'table' and response.errors[1] or response)
+                                local jsonBody = response:match('{.*') or response
+                                response = json.decode(jsonBody) or response
                             end
+
+                            if type(response) == 'table' then
+                                response = response.errors and response.errors[1] or response
+                            end
+
+                            badResponse(endpoint, status, response or 'no response body')
                         end
                     end, 'POST', json.encode(buffer), headers)
 
