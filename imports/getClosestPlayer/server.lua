@@ -12,21 +12,27 @@
 ---@return number? playerPed
 ---@return vector3? playerCoords
 function lib.getClosestPlayer(coords, maxDistance)
-    local players = GetActivePlayers()
+    local players = GetPlayers()
     local closestId, closestPed, closestCoords
     maxDistance = maxDistance or 2.0
 
     for i = 1, #players do
-        local playerId = players[i]
-        local playerPed = GetPlayerPed(playerId)
-        local playerCoords = GetEntityCoords(playerPed)
-        local distance = #(coords - playerCoords)
+        local playerId = tonumber(players[i])
 
-        if distance < maxDistance then
-            maxDistance = distance
-            closestId = playerId
-            closestPed = playerPed
-            closestCoords = playerCoords
+        if playerId then
+            local playerPed = GetPlayerPed(playerId)
+
+            if playerPed > 0 then
+                local playerCoords = GetEntityCoords(playerPed)
+                local distance = #(coords - playerCoords)
+
+                if distance < maxDistance then
+                    maxDistance = distance
+                    closestId = playerId
+                    closestPed = playerPed
+                    closestCoords = playerCoords
+                end
+            end
         end
     end
 
