@@ -174,6 +174,14 @@ const ListMenu: React.FC = () => {
     [indexStates, selected]
   );
 
+  const getSelectedValueDescription = useCallback(() => {
+    const selectedItem = menu.items[selected];
+    if (!selectedItem?.values || !isValuesObject(selectedItem.values)) return undefined;
+
+    const currentValue = selectedItem.values[indexStates[selected]];
+    return typeof currentValue === 'object' ? currentValue.description : undefined;
+  }, [indexStates, isValuesObject, menu.items, selected]);
+
   useNuiEvent('closeMenu', () => closeMenu(true, undefined, true));
 
   useNuiEvent('setMenu', (data: MenuSettings) => {
@@ -200,18 +208,8 @@ const ListMenu: React.FC = () => {
     <>
       {visible && (
         <Tooltip
-          label={
-            isValuesObject(menu.items[selected].values)
-              ? // @ts-ignore
-                menu.items[selected].values[indexStates[selected]].description
-              : menu.items[selected].description
-          }
-          opened={
-            isValuesObject(menu.items[selected].values)
-              ? // @ts-ignore
-                !!menu.items[selected].values[indexStates[selected]].description
-              : !!menu.items[selected].description
-          }
+          label={getSelectedValueDescription() ?? menu.items[selected]?.description}
+          opened={!!(getSelectedValueDescription() ?? menu.items[selected]?.description)}
           transitionDuration={0}
           classNames={{ tooltip: classes.tooltip }}
         >

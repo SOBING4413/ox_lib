@@ -13,6 +13,10 @@ interface Props {
   checked: boolean;
 }
 
+const getValueLabel = (value: string | { label: string; description: string }) => {
+  return typeof value === 'object' ? value.label : value;
+};
+
 const useStyles = createStyles((theme, params: { iconColor?: string }) => ({
   buttonContainer: {
     backgroundColor: theme.colors.dark[6],
@@ -77,9 +81,9 @@ const ListItem = forwardRef<Array<HTMLDivElement | null>, Props>(({ item, index,
       className={classes.buttonContainer}
       key={`item-${index}`}
       ref={(element: HTMLDivElement) => {
-        if (ref)
-          // @ts-ignore i cba
-          return (ref.current = [...ref.current, element]);
+        if (!ref || typeof ref === 'function') return;
+        if (!ref.current) return;
+        ref.current[index] = element;
       }}
     >
       <Group spacing={15} noWrap className={classes.buttonWrapper}>
@@ -102,10 +106,7 @@ const ListItem = forwardRef<Array<HTMLDivElement | null>, Props>(({ item, index,
             <Stack spacing={0} justify="space-between">
               <Text className={classes.label}>{item.label}</Text>
               <Text>
-                {typeof item.values[scrollIndex] === 'object'
-                  ? // @ts-ignore for some reason even checking the type TS still thinks it's a string
-                    item.values[scrollIndex].label
-                  : item.values[scrollIndex]}
+                {getValueLabel(item.values[scrollIndex])}
               </Text>
             </Stack>
             <Group spacing={1} position="center">
